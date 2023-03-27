@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import './question.dart';
-import './answer.dart';
+import './result.dart';
+import './quiz.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,23 +14,44 @@ class MyApp extends StatefulWidget {
 }
 
 class MyAppState extends State<MyApp> {
-  var _questionIndex = 0;
-  final questions = const [
+  final _questions = const [
     {
       'questionText': 'What\'s your favourite color?',
-      'answer': ['red', 'green', 'blue']
+      'answer': [
+        {'text': 'red', 'score': 6},
+        {'text': 'green', 'score': 10},
+        {'text': 'blue', 'score': 3}
+      ]
     },
     {
       'questionText': 'What\'s your animal ?',
-      'answer': ['lion', 'deer', 'elephant']
+      'answer': [
+        {'text': 'lion', 'score': 4},
+        {'text': 'deer', 'score': 2},
+        {'text': 'elephant', 'score': 9}
+      ]
     },
     {
       'questionText': 'What\'s your favourite player?',
-      'answer': ['kohli', 'dhoni', 'sachin']
+      'answer': [
+        {'text': 'kohli', 'score': 8},
+        {'text': 'dhoni', 'score': 3},
+        {'text': 'sachin', 'score': 7}
+      ]
     },
   ];
+  var _questionIndex = 0;
+  var _toatlScore = 0;
 
-  void _answerQuestion() {
+  void _restQuiz() {
+    setState(() {
+      _toatlScore = 0;
+      _questionIndex = 0;
+    });
+  }
+
+  void _answerQuestion(int score) {
+    _toatlScore = _toatlScore + score;
     setState(() {
       _questionIndex = _questionIndex + 1;
     });
@@ -49,19 +70,9 @@ class MyAppState extends State<MyApp> {
           appBar: AppBar(
             title: const Text("Quiz App"),
           ),
-          body: _questionIndex < questions.length
-              ? Column(children: [
-                  Question(
-                    questions[_questionIndex]['questionText'] as String,
-                  ),
-                  ...(questions[_questionIndex]['answer'] as List<String>)
-                      .map((answer) {
-                    return Answer(_answerQuestion, answer);
-                  }).toList()
-                ])
-              : const Center(
-                  child: Text("You did it"),
-                ),
+          body: _questionIndex < _questions.length
+              ? Quiz(_questions, _answerQuestion, _questionIndex)
+              : Result(_toatlScore, _restQuiz),
         ));
   }
 }
